@@ -6,46 +6,52 @@ function UserDashboard() {
   const [userProperties, setUserProperties] = useState([]);
   const loggedUser = JSON.parse(localStorage.getItem("loggedInUser"));
 
-  useEffect(() => {
-    if (!loggedUser) {
-      navigate("/login");
-      return;
-    }
+useEffect(() => {
+  if (!loggedUser) {
+    navigate("/login");
+    return;
+  }
 
-    let allProperties = JSON.parse(localStorage.getItem("properties")) || [];
-    
-    // Always ensure sample data exists for this user
-    const userHasProperties = allProperties.some(
-      (p) => p.userEmail === loggedUser.email || p.userName === loggedUser.name
-    );
-    
-    if (!userHasProperties) {
-      const sampleProperties = [
-        {
-          city: "Bangalore",
-          address: "456 MG Road",
-          propertyType: "villa",
-          budget: "1200000",
-          changes: "Garden landscaping and terrace waterproofing",
-          userName: loggedUser.name,
-          userEmail: loggedUser.email,
-          submittedAt: new Date().toISOString(),
-          recommendations: [
-            "Install modular kitchen with granite countertops",
-            "Add premium bathroom fittings with geyser",
-            "Create landscaped garden with pathway stones",
-          ],
-        },
-      ];
-      allProperties = [...allProperties, ...sampleProperties];
-      localStorage.setItem("properties", JSON.stringify(allProperties));
-    }
-    
-    const filtered = allProperties.filter(
-      (p) => p.userEmail === loggedUser.email || p.userName === loggedUser.name
-    );
-    setUserProperties(filtered);
-  }, []);
+  let allProperties = JSON.parse(localStorage.getItem("properties")) || [];
+
+  const userHasProperties = allProperties.some(
+    (p) =>
+      p.userEmail === loggedUser.email ||
+      p.userName === loggedUser.name
+  );
+
+  if (!userHasProperties) {
+    const sampleProperties = [
+      {
+        city: "Bangalore",
+        address: "456 MG Road",
+        propertyType: "villa",
+        budget: "1200000",
+        changes: "Garden landscaping and terrace waterproofing",
+        userName: loggedUser.name,
+        userEmail: loggedUser.email,
+        submittedAt: new Date().toISOString(),
+        recommendations: [
+          "Install modular kitchen with granite countertops",
+          "Add premium bathroom fittings with geyser",
+          "Create landscaped garden with pathway stones",
+        ],
+      },
+    ];
+
+    allProperties = [...allProperties, ...sampleProperties];
+    localStorage.setItem("properties", JSON.stringify(allProperties));
+  }
+
+  const filtered = allProperties.filter(
+    (p) =>
+      p.userEmail === loggedUser.email ||
+      p.userName === loggedUser.name
+  );
+
+  setUserProperties(filtered);
+
+}, []);
 
   return (
     <div style={styles.container}>
