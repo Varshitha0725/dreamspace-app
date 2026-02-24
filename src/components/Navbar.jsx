@@ -15,6 +15,19 @@ function Navbar() {
     navigate("/login");
   };
 
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      // If no history, go to dashboard
+      if (loggedUser?.role === "admin") {
+        navigate("/admin-dashboard");
+      } else {
+        navigate("/user-dashboard");
+      }
+    }
+  };
+
   const handleDashboard = () => {
     if (loggedUser?.role === "admin") {
       navigate("/admin-dashboard");
@@ -28,7 +41,7 @@ function Navbar() {
       {loggedUser && (
         <>
           <div style={styles.leftSection}>
-            <span onClick={() => navigate(-1)} style={styles.backLink}>
+            <span onClick={handleBack} style={styles.backLink}>
               ← Back
             </span>
           </div>

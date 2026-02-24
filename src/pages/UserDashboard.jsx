@@ -4,54 +4,52 @@ import { useState, useEffect } from "react";
 function UserDashboard() {
   const navigate = useNavigate();
   const [userProperties, setUserProperties] = useState([]);
+
+  useEffect(() => {
+    const loggedUser = JSON.parse(localStorage.getItem("loggedInUser"));
+    
+    if (!loggedUser) {
+      navigate("/login");
+      return;
+    }
+
+    let allProperties = JSON.parse(localStorage.getItem("properties")) || [];
+
+    const userHasProperties = allProperties.some(
+      (p) => p.userEmail === loggedUser.email || p.userName === loggedUser.name
+    );
+
+    if (!userHasProperties) {
+      const sampleProperties = [
+        {
+          city: "Bangalore",
+          address: "456 MG Road",
+          propertyType: "villa",
+          budget: "1200000",
+          changes: "Garden landscaping and terrace waterproofing",
+          userName: loggedUser.name,
+          userEmail: loggedUser.email,
+          submittedAt: new Date().toISOString(),
+          recommendations: [
+            "Install modular kitchen with granite countertops",
+            "Add premium bathroom fittings with geyser",
+            "Create landscaped garden with pathway stones",
+          ],
+        },
+      ];
+
+      allProperties = [...allProperties, ...sampleProperties];
+      localStorage.setItem("properties", JSON.stringify(allProperties));
+    }
+
+    const filtered = allProperties.filter(
+      (p) => p.userEmail === loggedUser.email || p.userName === loggedUser.name
+    );
+
+    setUserProperties(filtered);
+  }, [navigate]);
+
   const loggedUser = JSON.parse(localStorage.getItem("loggedInUser"));
-
-useEffect(() => {
-  if (!loggedUser) {
-    navigate("/login");
-    return;
-  }
-
-  let allProperties = JSON.parse(localStorage.getItem("properties")) || [];
-
-  const userHasProperties = allProperties.some(
-    (p) =>
-      p.userEmail === loggedUser.email ||
-      p.userName === loggedUser.name
-  );
-
-  if (!userHasProperties) {
-    const sampleProperties = [
-      {
-        city: "Bangalore",
-        address: "456 MG Road",
-        propertyType: "villa",
-        budget: "1200000",
-        changes: "Garden landscaping and terrace waterproofing",
-        userName: loggedUser.name,
-        userEmail: loggedUser.email,
-        submittedAt: new Date().toISOString(),
-        recommendations: [
-          "Install modular kitchen with granite countertops",
-          "Add premium bathroom fittings with geyser",
-          "Create landscaped garden with pathway stones",
-        ],
-      },
-    ];
-
-    allProperties = [...allProperties, ...sampleProperties];
-    localStorage.setItem("properties", JSON.stringify(allProperties));
-  }
-
-  const filtered = allProperties.filter(
-    (p) =>
-      p.userEmail === loggedUser.email ||
-      p.userName === loggedUser.name
-  );
-
-  setUserProperties(filtered);
-
-}, []);
 
   return (
     <div style={styles.container}>
@@ -119,7 +117,6 @@ const styles = {
   container: { padding: "2rem", backgroundColor: "#f5f7fa", minHeight: "100vh" },
   header: { textAlign: "center", marginBottom: "30px" },
   siteTitle: { fontSize: "42px", fontWeight: "bold", color: "#333", marginBottom: "10px" },
-  subtitle: { fontSize: "24px", color: "#555" },
   content: { maxWidth: "1200px", margin: "0 auto" },
   actionSection: { textAlign: "center", marginBottom: "30px" },
   submitButton: { padding: "12px 30px", backgroundColor: "#2563eb", color: "white", border: "none", borderRadius: "6px", cursor: "pointer", fontWeight: "bold", fontSize: "16px" },
