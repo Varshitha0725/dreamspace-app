@@ -55,8 +55,6 @@ function UserDashboard() {
 
 }, [navigate]);
 
-  const loggedUser = JSON.parse(localStorage.getItem("loggedInUser"));
-
   return (
     <div style={styles.container}>
       <div style={styles.header}>
