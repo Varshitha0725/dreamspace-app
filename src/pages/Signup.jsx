@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 function Signup() {
   const [form, setForm] = useState({
-    role: "user",
+    role: "user",   // 👈 force role to always be user
     name: "",
     email: "",
     password: "",
@@ -21,12 +21,22 @@ function Signup() {
       return;
     }
 
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-    users.push(form);
-    localStorage.setItem("users", JSON.stringify(users));
-
+    // Accept any signup without validation
+    const userData = {
+      role: form.role,
+      name: form.name,
+      email: form.email,
+      identifier: form.email,
+    };
+    
+    localStorage.setItem("loggedInUser", JSON.stringify(userData));
     alert("Signup Successful!");
-    navigate("/login");
+    
+    if (form.role === "admin") {
+      navigate("/admin-dashboard");
+    } else {
+      navigate("/user-dashboard");
+    }
   };
 
   return (
@@ -34,7 +44,7 @@ function Signup() {
       {/* Left side with image */}
       <div style={styles.leftSide}>
         <img 
-          src="/images/imagehouse.jpeg"   // 👈 use same photo as login
+          src="/images/imagehouse.jpeg"   // 👈 same photo as login
           alt="Property" 
           style={styles.image}
         />
@@ -42,13 +52,12 @@ function Signup() {
 
       {/* Right side with title + form */}
       <div style={styles.rightSide}>
-        {/* Title ABOVE the signup card */}
         <h1 style={styles.siteTitle}>DreamSpace: Enhancing Homes</h1>
 
         <div style={styles.card}>
           <h2 style={styles.title}>Signup</h2>
 
-          {/* Role Selection */}
+          {/* Role Selection - only User */}
           <div style={styles.roleContainer}>
             <label>
               <input
@@ -56,20 +65,9 @@ function Signup() {
                 name="role"
                 value="user"
                 checked={form.role === "user"}
-                onChange={handleChange}
+                readOnly   // 👈 no change allowed
               />
               User
-            </label>
-
-            <label style={{ marginLeft: "20px" }}>
-              <input
-                type="radio"
-                name="role"
-                value="admin"
-                checked={form.role === "admin"}
-                onChange={handleChange}
-              />
-              Admin
             </label>
           </div>
 
@@ -131,7 +129,7 @@ const styles = {
   rightSide: {
     flex: 1,
     display: "flex",
-    flexDirection: "column",   // stack title + card vertically
+    flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -139,7 +137,7 @@ const styles = {
     fontSize: "28px",
     fontWeight: "bold",
     color: "#333",
-    marginBottom: "24px",   // spacing above card
+    marginBottom: "24px",
     textAlign: "center",
   },
   card: {
@@ -176,11 +174,7 @@ const styles = {
     fontWeight: "bold",
     marginTop: "15px",
   },
-  link: {
-    color: "#2563eb",
-    textDecoration: "none",
-    fontWeight: "bold",
-  },
 };
 
 export default Signup;
+

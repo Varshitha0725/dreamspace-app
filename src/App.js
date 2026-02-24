@@ -11,7 +11,6 @@ import "./App.css";
 function AppLayout() {
   const location = useLocation();
 
-  // Hide Navbar on login and signup pages
   const hideNavbar = location.pathname === "/login" || location.pathname === "/signup" || location.pathname === "/";
 
   return (

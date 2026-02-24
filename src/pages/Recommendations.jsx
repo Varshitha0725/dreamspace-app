@@ -1,32 +1,30 @@
 // src/pages/Recommendations.jsx
 import React, { useEffect, useState } from "react";
 
-
 function Recommendations() {
   const [propertyData, setPropertyData] = useState(null);
-  
 
   useEffect(() => {
-    const storedProperties =
-      JSON.parse(localStorage.getItem("properties")) || [];
+    const storedProperties = JSON.parse(localStorage.getItem("properties")) || [];
 
-    if (storedProperties.length > 0) {
+    if (Array.isArray(storedProperties) && storedProperties.length > 0) {
+      setPropertyData(storedProperties[storedProperties.length - 1]);
+    } else if (typeof storedProperties === "object" && Object.keys(storedProperties).length > 0) {
+      const locationKeys = Object.keys(storedProperties);
+      const latestLocation = locationKeys[locationKeys.length - 1];
       const latestProperty =
-        storedProperties[storedProperties.length - 1];
-
+        storedProperties[latestLocation][storedProperties[latestLocation].length - 1];
       setPropertyData(latestProperty);
     }
   }, []);
 
   const generateRecommendations = (data) => {
     let ideas = [];
-
     const budget = Number(data.budget) || 0;
     const changeArea = data.changes?.trim().toLowerCase();
     const lowBudget = budget < 20000;
 
-    // ================= BEDROOM =================
-    if (changeArea === "bedroom") {
+    if (changeArea.includes("bedroom")) {
       ideas = lowBudget
         ? [
             "Repaint bedroom walls with calm pastel colors.",
@@ -41,10 +39,21 @@ function Recommendations() {
             "Upgrade to premium wooden flooring.",
             "Add smart lighting control system.",
           ];
-    }
-
-    // ================= GARDEN =================
-    else if (changeArea === "garden") {
+    } else if (changeArea.includes("kitchen")) {
+      ideas = lowBudget
+        ? [
+            "Repaint kitchen walls with washable paint.",
+            "Upgrade lighting to LED.",
+            "Add modular storage racks.",
+            "Replace old cabinet handles.",
+          ]
+        : [
+            "Install modular kitchen units.",
+            "Add premium countertop material.",
+            "Upgrade flooring to tiles.",
+            "Install smart lighting and chimney.",
+          ];
+    } else if (changeArea.includes("garden")) {
       ideas = lowBudget
         ? [
             "Clean and level garden surface.",
@@ -59,10 +68,7 @@ function Recommendations() {
             "Install automatic sprinkler system.",
             "Add premium lawn grass installation.",
           ];
-    }
-
-    // ================= WASHROOM =================
-    else if (changeArea === "washroom") {
+    } else if (changeArea.includes("washroom")) {
       ideas = lowBudget
         ? [
             "Replace old taps and shower fittings.",
@@ -77,27 +83,23 @@ function Recommendations() {
             "Install rain shower system.",
             "Add concealed flush system.",
           ];
-    }
-    // ================= BALCONY =================
-else if (changeArea === "balcony") {
-  ideas = lowBudget
-    ? [
-        "Add potted plants for greenery.",
-        "Install foldable drying rack.",
-        "Place a small outdoor chair and table.",
-        "Use fairy lights for cozy ambiance.",
-      ]
-    : [
-        "Install wooden deck flooring.",
-        "Add premium outdoor seating set.",
-        "Create vertical garden wall.",
-        "Install retractable awning or canopy.",
-        "Add decorative railing planters.",
-      ];
-}
-
-    // ================= DEFAULT =================
-    else {
+    } else if (changeArea.includes("balcony")) {
+      ideas = lowBudget
+        ? [
+            "Add potted plants for greenery.",
+            "Install foldable drying rack.",
+            "Place a small outdoor chair and table.",
+            "Use fairy lights for cozy ambiance.",
+          ]
+        : [
+            "Install wooden deck flooring.",
+            "Add premium outdoor seating set.",
+            "Create vertical garden wall.",
+            "Install retractable awning or canopy.",
+            "Add decorative railing planters.",
+          ];
+    } else {
+      // Default fallback
       ideas = lowBudget
         ? [
             "Repaint interior walls.",
@@ -111,7 +113,6 @@ else if (changeArea === "balcony") {
             "Install smart lighting system.",
           ];
     }
-
 
     return ideas;
   };
@@ -137,26 +138,21 @@ else if (changeArea === "balcony") {
       </div>
 
       <div style={styles.rightSide}>
-        <h1 style={styles.siteTitle}>
-          DreamSpace: Enhancing Homes
-        </h1>
+        <h1 style={styles.siteTitle}>DreamSpace: Enhancing Homes</h1>
 
         <div style={styles.card}>
           <h2 style={styles.title}>Recommended Ideas</h2>
 
-          <p><strong>Location:</strong> {propertyData.location}</p>
+          <p><strong>Location:</strong> {propertyData.city}, {propertyData.address}</p>
           <p><strong>Property Type:</strong> {propertyData.propertyType}</p>
           <p><strong>Budget:</strong> ₹{propertyData.budget}</p>
           <p><strong>Changes:</strong> {propertyData.changes}</p>
 
           <ul style={styles.list}>
             {recommendations.map((idea, index) => (
-              <li key={index}>
-                {index + 1}. {idea}
-              </li>
+              <li key={index}>{index + 1}. {idea}</li>
             ))}
           </ul>
-
         </div>
       </div>
     </div>
@@ -165,59 +161,15 @@ else if (changeArea === "balcony") {
 
 // Styles
 const styles = {
-  container: {
-    display: "flex",
-    height: "100vh",
-    backgroundColor: "#ffffff",
-  },
-leftSide: {
-  flex: 1,
-  display: "flex",
-  justifyContent: "center",  // centers horizontally
-  alignItems: "center",      // centers vertically
-  backgroundColor: "#f9f9f9",
-},
-
- image: {
-  width: "100%",        // responsive width
-  maxWidth: "510px",    // consistent size limit
-  height: "auto",       // keeps aspect ratio
-  borderRadius: "9px",
-  objectFit: "cover",   // prevents distortion
-  display: "block",
-  margin: "0 auto",     // centers horizontally
-},
-
-  rightSide: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  siteTitle: {
-    fontSize: "38px",
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: "24px",
-    textAlign: "center",
-  },
-  card: {
-    width: "400px",
-    padding: "40px",
-    backgroundColor: "white",
-    borderRadius: "8px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-    textAlign: "left",
-  },
-  title: {
-    marginBottom: "20px",
-    textAlign: "center",
-  },
-  list: {
-    marginTop: "15px",
-    paddingLeft: "20px",
-  },
+  container: { display: "flex", height: "100vh", backgroundColor: "#ffffff" },
+  leftSide: { flex: 1, display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#f9f9f9" },
+  image: { width: "100%", maxWidth: "510px", height: "auto", borderRadius: "9px", objectFit: "cover", display: "block", margin: "0 auto" },
+  rightSide: { flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" },
+  siteTitle: { fontSize: "38px", fontWeight: "bold", color: "#333", marginBottom: "24px", textAlign: "center" },
+  card: { width: "400px", padding: "40px", backgroundColor: "white", borderRadius: "8px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", textAlign: "left" },
+  title: { marginBottom: "20px", textAlign: "center" },
+  list: { marginTop: "15px", paddingLeft: "20px" },
 };
 
 export default Recommendations;
+
