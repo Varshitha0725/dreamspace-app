@@ -5,49 +5,55 @@ function UserDashboard() {
   const navigate = useNavigate();
   const [userProperties, setUserProperties] = useState([]);
 
-  useEffect(() => {
-    const loggedUser = JSON.parse(localStorage.getItem("loggedInUser"));
-    
-    if (!loggedUser) {
-      navigate("/login");
-      return;
-    }
+ useEffect(() => {
+  const loggedUser = JSON.parse(localStorage.getItem("loggedInUser"));
 
-    let allProperties = JSON.parse(localStorage.getItem("properties")) || [];
+  if (!loggedUser) {
+    navigate("/login");
+    return;
+  }
 
-    const userHasProperties = allProperties.some(
-      (p) => p.userEmail === loggedUser.email || p.userName === loggedUser.name
-    );
+  let allProperties =
+    JSON.parse(localStorage.getItem("properties")) || [];
 
-    if (!userHasProperties) {
-      const sampleProperties = [
-        {
-          city: "Bangalore",
-          address: "456 MG Road",
-          propertyType: "villa",
-          budget: "1200000",
-          changes: "Garden landscaping and terrace waterproofing",
-          userName: loggedUser.name,
-          userEmail: loggedUser.email,
-          submittedAt: new Date().toISOString(),
-          recommendations: [
-            "Install modular kitchen with granite countertops",
-            "Add premium bathroom fittings with geyser",
-            "Create landscaped garden with pathway stones",
-          ],
-        },
-      ];
+  const userHasProperties = allProperties.some(
+    (p) =>
+      p.userEmail === loggedUser.email ||
+      p.userName === loggedUser.name
+  );
 
-      allProperties = [...allProperties, ...sampleProperties];
-      localStorage.setItem("properties", JSON.stringify(allProperties));
-    }
+  if (!userHasProperties) {
+    const sampleProperties = [
+      {
+        city: "Bangalore",
+        address: "456 MG Road",
+        propertyType: "villa",
+        budget: "1200000",
+        changes: "Garden landscaping and terrace waterproofing",
+        userName: loggedUser.name,
+        userEmail: loggedUser.email,
+        submittedAt: new Date().toISOString(),
+        recommendations: [
+          "Install modular kitchen with granite countertops",
+          "Add premium bathroom fittings with geyser",
+          "Create landscaped garden with pathway stones",
+        ],
+      },
+    ];
 
-    const filtered = allProperties.filter(
-      (p) => p.userEmail === loggedUser.email || p.userName === loggedUser.name
-    );
+    allProperties = [...allProperties, ...sampleProperties];
+    localStorage.setItem("properties", JSON.stringify(allProperties));
+  }
 
-    setUserProperties(filtered);
-  }, [navigate]);
+  const filtered = allProperties.filter(
+    (p) =>
+      p.userEmail === loggedUser.email ||
+      p.userName === loggedUser.name
+  );
+
+  setUserProperties(filtered);
+
+}, [navigate]);
 
   const loggedUser = JSON.parse(localStorage.getItem("loggedInUser"));
 
